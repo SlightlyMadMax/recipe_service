@@ -1,0 +1,42 @@
+version: "3.5"
+
+networks:
+  recipes_network:
+    name: recipes_network
+    driver: bridge
+
+services:
+
+  postgres:
+    container_name: recipes_postgres
+    image: postgres:15
+    env_file:
+      - .env.db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432"
+    networks:
+        - recipes_network
+    restart: always
+
+  backend:
+    container_name: recipe_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && python manage.py runserver 0.0.0.0:8002"
+    env_file:
+      - .env
+    volumes:
+      - ./src/:/app/
+      - ../mounts/static:/app/static
+      - ../mounts/media:/app/media
+    ports:
+      - "8002"
+    networks:
+      - recipes_network
+    restart: always
+
+volumes:
+  postgres_data:
