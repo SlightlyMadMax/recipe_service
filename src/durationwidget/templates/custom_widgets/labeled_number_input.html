@@ -1,0 +1,13 @@
+<label>
+  <input class="vIntegerField"
+         min="0"
+         oninput="validity.valid||(value='');"
+         value="{{ widget.value|stringformat:'s' }}"
+         type="{{ widget.type }}"
+         max="{{ widget.max }}"
+         name="{{ widget.name }}"{% if widget.value != None %}
+         {% endif %}{% include "django/forms/widgets/attrs.html" %}
+  />
+  <br/>
+  <span class="help" style="display: inline;">{{ widget.widget_label }}</span>
+</label>
