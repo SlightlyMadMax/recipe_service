@@ -77,7 +77,6 @@ class Ingredient(models.Model):
 
     alternative_names = ArrayField(
         models.CharField(max_length=127),
-        unique=True,
         blank=True,
         null=True,
         verbose_name='Альтернативные названия'

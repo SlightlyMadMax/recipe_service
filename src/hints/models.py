@@ -4,18 +4,29 @@ from recipes.models import Ingredient
 
 
 class Product(models.Model):
-    name = models.CharField()
+    name = models.CharField(
+        max_length=127,
+        null=False,
+        unique=True,
+        verbose_name='Название'
+    )
     alternative_names = ArrayField(
         models.CharField(max_length=127),
-        unique=True,
         blank=True,
         null=True,
         verbose_name='Альтернативные названия'
     )
 
+    class Meta:
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
 
-class Hint(models.Model):
-    hint_text = models.TextField(
+    def __str__(self):
+        return self.name
+
+
+class BaseHint(models.Model):
+    text = models.TextField(
         null=False,
         unique=True,
         verbose_name="Текст подсказки"
@@ -24,12 +35,15 @@ class Hint(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.text[:50] + '...'
 
-class BoilHint(Hint):
-    product = models.ForeignKey(
+
+class BoilHint(BaseHint):
+    product = models.OneToOneField(
         to=Product,
         on_delete=models.PROTECT,
-        related_name='hints',
+        related_name='boil_hints',
         verbose_name='Продукт'
     )
 
@@ -38,11 +52,11 @@ class BoilHint(Hint):
         verbose_name_plural = 'Подсказки по времени варки продуктов'
 
 
-class StorageHint(Hint):
-    product = models.ForeignKey(
+class StorageHint(BaseHint):
+    product = models.OneToOneField(
         to=Product,
         on_delete=models.PROTECT,
-        related_name='hints',
+        related_name='storage_hints',
         verbose_name='Продукт'
     )
 
@@ -51,8 +65,8 @@ class StorageHint(Hint):
         verbose_name_plural = 'Подсказки по сроку хранения продуктов'
 
 
-class SubstitutionHint(Hint):
-    ingredient = models.ForeignKey(
+class SubstitutionHint(BaseHint):
+    ingredient = models.OneToOneField(
         to=Ingredient,
         on_delete=models.PROTECT,
         related_name='substitution',

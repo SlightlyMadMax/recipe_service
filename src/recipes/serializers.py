@@ -39,6 +39,12 @@ class RecipeIngredientSerializer(serializers.Serializer):
 
 
 class RecipeSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
     title = serializers.CharField(read_only=True, max_length=255)
     dish_name = serializers.CharField(read_only=True, source='dish.name')
     ingredients = RecipeIngredientSerializer(read_only=True, many=True)

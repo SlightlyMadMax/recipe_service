@@ -22,7 +22,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('culinary/', include('recipes.urls'))
+    path('culinary/', include('recipes.urls')),
+    path('culinary/', include('hints.urls'))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

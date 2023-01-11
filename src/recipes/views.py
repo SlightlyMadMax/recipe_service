@@ -51,6 +51,8 @@ class RecipeAPI(ViewSet):
         return self.get_random_by_filter(recipe_filter)
 
     def get_by_dish_name_or_title(self, request, name: str):
+        if len(name) < 3:
+            raise Http404
         recipes = models.Recipe.objects\
             .filter(Q(is_visible=True) & (Q(dish__name=name) | Q(title__icontains=name)))
         if len(recipes) == 0:
@@ -98,7 +100,6 @@ class RecipeAPI(ViewSet):
 
         recipes = models.Recipe.objects.filter(Q(is_visible=True) & q_list).distinct()
 
-        print(recipes)
         result = []
 
         for recipe in recipes.all():
