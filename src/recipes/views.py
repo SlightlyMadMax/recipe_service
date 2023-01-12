@@ -1,4 +1,5 @@
 from functools import reduce
+from itertools import chain
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import Http404
@@ -88,18 +89,35 @@ class RecipeAPI(ViewSet):
 
     def get_by_ingredients(self, request):
         names = self.request.query_params.getlist('ingredients')
-        if len(names) == 0:
+        if len(names) < 2:
             raise Http404
         q_list = map(lambda n: Q(name__iexact=n) | Q(alternative_names__contains=[n]), names)
         q_list = reduce(lambda a, b: a | b, q_list)
+
+        # Ищем ингредиенты по списку названий от пользователя
         names = models.Ingredient.objects\
             .filter(q_list).values_list('name', flat=True)
+
+        if len(names) < 2:
+            raise Http404
 
         q_list = map(lambda n: Q(ingredients__ingredient__name=n), names)
         q_list = reduce(lambda a, b: a | b, q_list)
 
+        # Ищем рецепты, у которых есть ингредиенты из полученного списка
+        # (чтобы потом несколько сузить поиск подходящих рецептов)
         recipes = models.Recipe.objects.filter(Q(is_visible=True) & q_list).distinct()
 
+        # Получаем стандартные ингредиенты и объединяем их с полученными выше.
+        # Важно, что я добавил стандартные ингредиенты только ПОСЛЕ того, как нашел рецепты по ингредиентам пользователя
+        # В противном случае, возвратились бы практически все рецепты, так как, скажем, соль есть почти в любом рецепте
+
+        default_names = models.Ingredient.objects.filter(is_default=True).values_list('name', flat=True)
+
+        names = (names | default_names).distinct()
+
+        # Далее, среди полученных рецептов я нахожу те, у которых список ингредиентов является подмножеством
+        # ингредиентов пользователя + стандартных ингредиентов.
         result = []
 
         for recipe in recipes.all():

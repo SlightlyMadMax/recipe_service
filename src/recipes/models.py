@@ -82,6 +82,11 @@ class Ingredient(models.Model):
         verbose_name='Альтернативные названия'
     )
 
+    is_default = models.BooleanField(
+        default=False,
+        verbose_name='Стандартный ингредиент'
+    )
+
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
