@@ -22,8 +22,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('culinary/', include('recipes.urls')),
-    path('culinary/', include('hints.urls'))
+    path('api/v1/culinary/', include('recipes.urls')),
+    path('api/v1/culinary/', include('hints.urls'))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

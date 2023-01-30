@@ -1,4 +1,5 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -7,6 +8,7 @@ from . import serializers
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_storage_hint_by_product_name(request, name: str):
     hint = get_object_or_404(
         models.StorageHint,
@@ -17,6 +19,7 @@ def get_storage_hint_by_product_name(request, name: str):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_boil_hint_by_product_name(request, name: str):
     hint = get_object_or_404(
         models.BoilHint,
@@ -27,6 +30,7 @@ def get_boil_hint_by_product_name(request, name: str):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_sub_hint_by_ingredient_name(request, name: str):
     hint = get_object_or_404(
         models.SubstitutionHint,

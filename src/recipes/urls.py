@@ -3,37 +3,42 @@ from . import views
 
 urlpatterns = [
     path(
-        'api/v1/recipe/<int:pk>/',
+        'recipe/suggest/',
+        views.SuggestRecipeAPI.as_view(),
+        name='suggest_recipe'
+    ),
+    path(
+        'recipe/<int:pk>/',
         views.get_by_id,
         name='recipe_by_id'
     ),
     path(
-        'api/v1/recipe/random/',
+        'recipe/random/',
         views.get_random,
         name='random_recipe'
     ),
     path(
-        'api/v1/recipe/random/category/<str:cat>/',
+        'random/category/<str:cat>/',
         views.get_random_in_category,
         name='random_recipe_by_category'
     ),
     path(
-        'api/v1/recipe/random/cuisine/<str:cuisine>/',
+        'recipe/random/cuisine/<str:cuisine>/',
         views.get_random_by_cuisine,
         name='random_recipe_by_cuisine'
     ),
     path(
-        'api/v1/recipe/filter/',
+        'recipe/filter/',
         views.get_by_parameters,
         name='recipe_by_parameters'
     ),
     path(
-        'api/v1/recipe/ingredients-search/',
+        'recipe/ingredients-search/',
         views.get_by_ingredients,
         name='recipe_by_ingredients'
     ),
     path(
-        'api/v1/recipe/<str:name>/',
+        'recipe/<str:name>/',
         views.get_by_dish_name_or_title,
         name='recipe_by_name'
     )

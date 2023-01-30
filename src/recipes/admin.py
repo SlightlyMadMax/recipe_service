@@ -15,8 +15,31 @@ class RecipePhotoInline(admin.StackedInline):
     max_num = 10
 
 
+class BaseRecipe(admin.ModelAdmin):
+    list_display_links = ('id', 'title')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["cooking_time"] = forms.DurationField(
+            widget=TimeDurationWidget(
+                show_days=False,
+                show_hours=True,
+                show_minutes=True,
+                show_seconds=False
+            ),
+            required=True
+        )
+        form.base_fields["cooking_time"].label = 'Время приготовления'
+        return form
+
+
+@admin.register(models.SuggestedRecipe)
+class SuggestedRecipe(BaseRecipe):
+    list_display = ('id', 'title', 'created_at', 'author', 'is_visible')
+
+
 @admin.register(models.Recipe)
-class Recipe(admin.ModelAdmin):
+class Recipe(BaseRecipe):
     list_display = ('id', 'title', 'created_at', 'has_photos', 'is_visible')
     fields = (
         'title',
@@ -40,7 +63,6 @@ class Recipe(admin.ModelAdmin):
     )
     autocomplete_fields = ('dish',)
     sortable_by = ('created_at', 'title', 'is_visible')
-    list_display_links = ('id', 'title')
     filter_horizontal = ('cuisine',)
     list_editable = ('is_visible',)
     inlines = (RecipeIngredient, RecipePhotoInline)
@@ -51,20 +73,6 @@ class Recipe(admin.ModelAdmin):
             return 'Нет'
         else:
             return 'Да'
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        form.base_fields["cooking_time"] = forms.DurationField(
-            widget=TimeDurationWidget(
-                show_days=False,
-                show_hours=True,
-                show_minutes=True,
-                show_seconds=False
-            ),
-            required=True
-        )
-        form.base_fields["cooking_time"].label = 'Время приготовления'
-        return form
 
 
 @admin.register(models.Cuisine)

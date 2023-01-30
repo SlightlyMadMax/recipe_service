@@ -2,14 +2,22 @@ from functools import reduce
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import Http404
-from rest_framework.decorators import api_view
+from rest_framework.generics import CreateAPIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from random import choice
 from . import serializers
 from . import models
 
 
+class SuggestRecipeAPI(CreateAPIView):
+    queryset = models.SuggestedRecipe.objects.all()
+    serializer_class = serializers.SuggestRecipeSerializer
+
+
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_by_id(request, pk=None):
     recipe = get_object_or_404(models.Recipe, pk=pk)
     serializer = serializers.RecipeSerializer(recipe, many=False)
@@ -27,6 +35,7 @@ def get_random_by_filter(recipe_filter):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_random(request):
     recipe_filter = {
         'is_visible': True,
@@ -35,6 +44,7 @@ def get_random(request):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_random_in_category(request, cat: str):
     recipe_filter = {
         'is_visible': True,
@@ -44,6 +54,7 @@ def get_random_in_category(request, cat: str):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_random_by_cuisine(request, cuisine: str):
     recipe_filter = {
         'is_visible': True,
@@ -53,6 +64,7 @@ def get_random_by_cuisine(request, cuisine: str):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_by_dish_name_or_title(request, name: str):
     if len(name) < 3:
         raise Http404
@@ -65,6 +77,7 @@ def get_by_dish_name_or_title(request, name: str):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_by_parameters(request):
     params = request.query_params
     temp_filter = {
@@ -93,6 +106,7 @@ def get_by_parameters(request):
 
 
 @api_view(('GET',))
+@permission_classes([IsAuthenticated])
 def get_by_ingredients(request):
     names = request.query_params.getlist('ingredients')
     if len(names) < 2:
@@ -137,4 +151,3 @@ def get_by_ingredients(request):
         raise Http404
     serializer = serializers.RecipeSerializer(result, many=True)
     return Response(serializer.data)
-

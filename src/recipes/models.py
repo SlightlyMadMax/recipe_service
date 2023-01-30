@@ -84,7 +84,12 @@ class Ingredient(models.Model):
 
     is_default = models.BooleanField(
         default=False,
-        verbose_name='Стандартный ингредиент'
+        verbose_name='Стандартный ингредиент?'
+    )
+
+    is_allergen = models.BooleanField(
+        default=False,
+        verbose_name='Распространённый аллерген?'
     )
 
     class Meta:
@@ -95,7 +100,7 @@ class Ingredient(models.Model):
         return str(self.name)
 
 
-class Recipe(models.Model):
+class BaseRecipe(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата создания',
@@ -106,6 +111,35 @@ class Recipe(models.Model):
         unique=True,
         verbose_name='Название'
     )
+    difficulty = models.CharField(
+        max_length=1,
+        choices=RecipeDifficulty.choices,
+        default=RecipeDifficulty.MEDIUM,
+        verbose_name='Сложность'
+    )
+    category = models.ForeignKey(
+        to=Category,
+        on_delete=models.PROTECT,
+        related_name='recipes',
+        verbose_name='Категория'
+    )
+    description = models.TextField(verbose_name='Описание')
+    instruction = models.TextField(verbose_name='Инструкция по приготовлению', unique=True)
+    calories = models.PositiveIntegerField(verbose_name='Число ккал на 100 г.')
+    servings_number = models.PositiveSmallIntegerField(verbose_name='Число порций')
+    cooking_time = models.DurationField(verbose_name='Время приготовления')
+    author = models.CharField(
+        verbose_name='Автор',
+        null=True,
+        max_length=127,
+        default=None
+    )
+
+    def __str__(self):
+        return self.title
+
+
+class Recipe(BaseRecipe):
     cuisine = models.ManyToManyField(
         to=Cuisine,
         related_name='recipes',
@@ -117,39 +151,29 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Блюдо'
     )
-    category = models.ForeignKey(
-        to=Category,
-        on_delete=models.PROTECT,
-        related_name='recipes',
-        verbose_name='Категория'
-    )
-    difficulty = models.CharField(
-        max_length=1,
-        choices=RecipeDifficulty.choices,
-        default=RecipeDifficulty.MEDIUM,
-        verbose_name='Сложность'
-    )
-    description = models.TextField(verbose_name='Описание')
-    instruction = models.TextField(verbose_name='Инструкция по приготовлению', unique=True)
     is_visible = models.BooleanField(verbose_name='Показывается', default=True)
-    calories = models.PositiveIntegerField(verbose_name='Число ккал на 100 г.')
-    servings_number = models.PositiveSmallIntegerField(verbose_name='Число порций')
-    cooking_time = models.DurationField(verbose_name='Время приготовления')
-    author = models.CharField(
-        verbose_name='Автор',
-        null=True,
-        max_length=127,
-        editable=False,
-        default=None
-    )
 
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
-    def __str__(self):
-        return self.title
+
+class SuggestedRecipe(BaseRecipe):
+    cuisine = models.CharField(max_length=255, verbose_name='Кухня')
+    dish = models.CharField(max_length=255, verbose_name='Блюдо')
+    is_visible = models.BooleanField(verbose_name='Показывается', default=False)
+    ingredients = models.JSONField(verbose_name='Ингредиенты')
+    vk_photo_link = models.CharField(
+        max_length=255,
+        default=None,
+        verbose_name='Ссылка на фото в ВК'
+    )
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Предложенный рецепт'
+        verbose_name_plural = 'Предложенные рецепты'
 
 
 class RecipeIngredient(models.Model):
@@ -165,7 +189,7 @@ class RecipeIngredient(models.Model):
         verbose_name='Название'
     )
     amount = models.DecimalField(
-        decimal_places=1,
+        decimal_places=2,
         max_digits=5,
         verbose_name='Количество'
     )
@@ -193,7 +217,7 @@ class RecipePhoto(models.Model):
         verbose_name='Рецепт'
     )
     photo = models.ImageField(upload_to='photo/%Y/%m/%d/', verbose_name='Фото')
-    vk_link = models.CharField(
+    vk_photo_link = models.CharField(
         null=True,
         blank=True,
         default=None,
@@ -204,4 +228,3 @@ class RecipePhoto(models.Model):
     class Meta:
         verbose_name = 'Фото рецепта'
         verbose_name_plural = 'Фото рецепта'
-
