@@ -29,6 +29,8 @@ DEBUG = bool(int(os.environ.get('DEBUG', 1)))
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    '188.225.47.178',
+    '1223347-cq20308.tw1.ru'
 ]
 
 
@@ -94,12 +96,6 @@ DATABASES = {
     }
 }
 
-
-if 'test' in sys.argv or 'test\_coverage' in sys.argv:  # Covers regular testing and django-coverage
-    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
-    DATABASES['default']['NAME'] = 'postgres'
-    DATABASES['default']['USER'] = 'postgres'
-    DATABASES['default']['PASSWORD'] = 'Max100500_'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
