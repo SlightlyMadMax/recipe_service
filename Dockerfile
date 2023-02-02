@@ -8,14 +8,14 @@ WORKDIR /app
 
 RUN mkdir -p /app/logs
 
-COPY ./requirements.txt /app/
+COPY ./src/requirements.txt /app/
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt --no-cache-dir
 
-COPY . /app/
-COPY .env /app/.env
-COPY .env.db /app/.env.db
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-COPY wait-postgres.sh /app/wait-postgres.sh
+COPY ./src /app/
+COPY ./.env /app/.env
+COPY ./.env.db /app/.env.db
+COPY ./docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY ./wait-postgres.sh /app/wait-postgres.sh
 
 RUN chmod +x docker-entrypoint.sh
