@@ -18,7 +18,7 @@ urlpatterns = [
         name='random_recipe'
     ),
     path(
-        'random/category/<str:cat>/',
+        'recipe/random/category/<str:cat>/',
         views.get_random_in_category,
         name='random_recipe_by_category'
     ),
