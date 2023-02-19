@@ -1,14 +1,14 @@
-from django.test import TestCase, Client
+from rest_framework.test import APITestCase
 from django.urls import reverse
 from recipes.models import *
+from utils.testing_utils.auth import get_authenticated_client
 from datetime import timedelta
 
 
-class TestViews(TestCase):
+class TestViews(APITestCase):
 
     def setUp(self):
-        self.client = Client()
-
+        self.client = get_authenticated_client()
         self.cuisine1 = Cuisine.objects.create(
             name='кухня'
         )

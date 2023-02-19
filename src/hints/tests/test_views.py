@@ -1,13 +1,14 @@
-from django.test import TestCase, Client
+from rest_framework.test import APITestCase
 from django.urls import reverse
 from hints.models import Product, BoilHint, StorageHint, SubstitutionHint
 from recipes.models import Ingredient
+from utils.testing_utils.auth import get_authenticated_client
 
 
-class TestViews(TestCase):
+class TestViews(APITestCase):
 
     def setUp(self):
-        self.client = Client()
+        self.client = get_authenticated_client()
         self.storage_hint_url = reverse('get_storage_hint', args=['product1'])
         self.boil_hint_url = reverse('get_boil_hint', args=['P1'])
         self.sub_hint_url = reverse('get_sub_hint', args=['ingredient1'])
@@ -18,7 +19,8 @@ class TestViews(TestCase):
         self.ingredient1 = Ingredient.objects.create(
             name='ingredient1',
             alternative_names=['i1'],
-            is_default=False
+            is_default=False,
+            is_allergen=False
         )
 
     def test_get_storage_hint_by_product_name(self):
