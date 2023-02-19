@@ -8,7 +8,7 @@ WORKDIR /app
 
 RUN mkdir -p /app/logs
 
-COPY ./src/requirements.txt /app/
+COPY ./requirements.txt /app/
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt --no-cache-dir
 
