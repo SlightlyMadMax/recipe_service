@@ -40,9 +40,10 @@ jobs:
       env:
           DEBUG: 0
           DJANGO_SECRET_KEY: CI_SECRET_KEY
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testing
-          POSTGRES_PORT: 5432
+          DB_ENGINE: django.db.backends.postgresql_psycopg2
+          DB_NAME: postgres
+          DB_USER: postgres
+          DB_PASSWORD: testing
+          DB_PORT: 5432
       run: |
         python ./src/manage.py test
