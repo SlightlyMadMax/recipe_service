@@ -16,14 +16,6 @@ class SuggestRecipeAPI(CreateAPIView):
     serializer_class = serializers.SuggestRecipeSerializer
 
 
-@api_view(('GET',))
-@permission_classes([IsAuthenticated])
-def get_by_id(request, pk=None):
-    recipe = get_object_or_404(models.Recipe, pk=pk)
-    serializer = serializers.RecipeSerializer(recipe, many=False)
-    return Response(serializer.data)
-
-
 def get_random_by_filter(recipe_filter):
     pks = models.Recipe.objects.filter(**recipe_filter).values_list('pk', flat=True)
     if len(pks) == 0:
@@ -31,6 +23,14 @@ def get_random_by_filter(recipe_filter):
     random_pk = choice(pks)
     random_recipe = models.Recipe.objects.get(pk=random_pk)
     serializer = serializers.RecipeSerializer(random_recipe, many=False)
+    return Response(serializer.data)
+
+
+@api_view(('GET',))
+@permission_classes([IsAuthenticated])
+def get_by_id(request, pk=None):
+    recipe = get_object_or_404(models.Recipe, pk=pk)
+    serializer = serializers.RecipeSerializer(recipe, many=False)
     return Response(serializer.data)
 
 
