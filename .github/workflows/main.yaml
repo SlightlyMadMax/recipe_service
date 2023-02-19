@@ -45,4 +45,4 @@ jobs:
           POSTGRES_DB: testing
           POSTGRES_PORT: 5432
       run: |
-        python manage.py test
+        python ./src/manage.py test
